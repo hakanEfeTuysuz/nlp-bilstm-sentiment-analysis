@@ -10,6 +10,18 @@ Bu proje, IMDb film yorumlarını analiz ederek "Olumlu" veya "Olumsuz" olarak s
 * **Production-Ready API:** Eğitilen model (`.pth`), FastAPI kullanılarak yüksek performanslı bir RESTful API'ye dönüştürülmüştür.
 * **Kullanıcı Arayüzü:** API ile asenkron (Fetch API) haberleşen, karanlık temalı (Dark Mode) bir HTML/CSS/JS frontend yazılmıştır.
 
+## 🛤️ Geliştirme Yolculuğu (Adım Adım İnşa)
+
+Bu proje, hazır bir kütüphane fonksiyonunun tek satırda çağrıldığı bir yapı değil; veri setinden donanım entegrasyonuna kadar her adımın modüler olarak tasarlandığı bir AR-GE günlüğüdür:
+
+1. **Donanım ve Altyapı Testi (`nlp_pytorch_test.py`):** Sistemin GPU (CUDA) kapasitesinin ve VRAM erişiminin doğrulanması.
+2. **Veri Boru Hattı ve Temizlik (`nlp_metin_temizleme.py`):** Ham IMDb yorumlarının Regex ile işlenerek büyük/küçük harf, noktalama işaretleri ve HTML etiketlerinden arındırılması.
+3. **Özel Sözlük İnşası (`imdb_sozluk.json`):** Temizlenen veriler üzerinde frekans analizi yapılarak, donanım dostu 10.000 kelimelik özel bir Embedding (Gömülme) sözlüğünün oluşturulması.
+4. **Matris Paketlemesi (`nlp_tam_boru_hatti.py`):** PyTorch `Dataset` ve `DataLoader` kullanılarak farklı uzunluklardaki metinlerin ekran kartına 256'lık sabit tensor matrisleri halinde (Padding/Truncation) beslenmesi.
+5. **Model İnşası ve Eğitim (`nlp_egitim_dongusu.py`):** BiLSTM mimarisinin kurulması ve modelin 25.000 yorum üzerinden eğitilerek öğrenilmiş ağırlıkların (`.pth`) diske kaydedilmesi.
+6. **Büyük Yüzleşme (`nlp_gercek_sinav.py`):** Modelin daha önce hiç görmediği 25.000 satırlık test setiyle sınava sokulup, ezber (Overfitting) testinin yapılması.
+7. **Ürünleştirme (`nlp_api.py` & Frontend):** Terminalde çalışan "beynin" FastAPI ile bir web servisine dönüştürülmesi ve asenkron çalışan bir HTML arayüzü ile dış dünyaya açılması.
+
 ## 📊 Performans ve Kanıtlar
 
 Model, eğitim sırasında hiç görmediği **25.000 satırlık test veri setinde** değerlendirilmiş ve aşağıdaki sonuçları elde etmiştir:
