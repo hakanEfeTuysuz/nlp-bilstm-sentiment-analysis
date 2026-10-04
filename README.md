@@ -95,6 +95,8 @@ Sistemin sınırlarını anlamak, gelişim sürecinin en kritik parçasıdır:
 1. **Negation Scope (Olumsuzluk Kapsamı) Problemi:** LSTM mimarisinin bir "Dikkat" (Attention) mekanizmasına sahip olmaması nedeniyle, *"This movie is not good"* gibi kısa ve doğrudan zıtlık barındıran cümlelerde sistem hataya düşebilmektedir. "Good" kelimesinin güçlü pozitif matris ağırlığı, "not" kelimesinin negatif etkisini kısa bağlamlarda bastırabilmektedir.
 2. **Karakter Filtreleme Kayıpları:** Regex tabanlı temizleme motoru (`[^a-z\s]`) Türkçe karakterleri ve noktalama işaretlerini tamamen sildiği için, kullanıcıdan gelen bazı girişlerde cümlenin gramer yapısı bozulabilmektedir.
 
+> 🔧 Bu sınırların her biri için planlanan çözümler aşağıdaki [Yol Haritası](#-yol-haritası) bölümünde ayrıntılı olarak yer almaktadır.
+
 ## 💻 Kurulum ve Çalıştırma
 
 ### Gereksinimler
@@ -130,9 +132,45 @@ Ardından:
 
 ## 🗺 Yol Haritası
 
-- [ ] Negation-scope problemini çözmek için **Attention** mekanizması veya **BERT (Transformers)** tabanlı mimariye geçiş
-- [ ] Türkçe karakter desteği içeren daha kapsamlı bir metin temizleme adımı
+Aşağıdaki çalışmalar, [Bilinen Sınırlar](#-bilinen-sınırlar-ve-zayıf-yönler) bölümünde belirtilen sorunları gidermek üzere planlanmıştır. Henüz hiçbiri tamamlanmamıştır.
+
+### 🎯 Sınırlara Karşı Planlanan Çözümler
+
+| Bilinen Sınır | Planlanan Çözüm |
+|---------------|-----------------|
+| Negation scope problemi | Attention mekanizması → BERT tabanlı mimari, olumsuzluk odaklı veri artırımı, hata analizi |
+| Karakter filtreleme kayıpları | Unicode uyumlu temizleme, noktalama ve kısaltma (`isn't`, `don't`) koruma, çok dilli tokenizer |
+
+### Aşama 1 — Değerlendirme Altyapısı (Önce Ölç)
+- [ ] Olumsuzluk içeren cümlelerden oluşan küçük bir **el yapımı test seti** hazırlamak (örn. *"not good"*, *"never boring"*, *"not bad at all"*, *"hardly impressive"*)
+- [ ] Yalnızca accuracy yerine **F1, precision/recall ve confusion matrix** raporlamak
+- [ ] Modelin yanlış bildiği örnekleri (hata analizi) dosyaya kaydedip kategorize etmek
+- [ ] Her iyileştirmeyi mevcut **%83.70 baseline** ile karşılaştırmak için sonuçları bu README'de tablolaştırmak
+
+### Aşama 2 — Metin Temizleme İyileştirmeleri (Karakter Kayıpları)
+- [ ] `[^a-z\s]` yerine Unicode uyumlu regex kullanmak ve Türkçe karakterleri (`ç, ğ, ı, ö, ş, ü`) korumak
+- [ ] `!`, `?` gibi duygu taşıyan noktalama işaretlerini silmek yerine ayrı token olarak tutmak
+- [ ] Kısaltmaları (`isn't`, `don't`, `can't`) açarak veya `not` token'ına çevirerek olumsuzluk bilgisinin kaybolmasını önlemek
+- [ ] Olumsuzluk ve sözlük dışı (`<UNK>`) kelime oranını ölçüp sözlük boyutunu (10.000) yeniden değerlendirmek
+
+### Aşama 3 — Olumsuzluk Probleminin Veri Tarafında Çözümü
+- [ ] **Negation-aware veri artırımı:** Eğitim setindeki cümlelere olumsuzluk ekleyip etiketi çevirerek yeni örnekler üretmek (örn. *"good"* → *"not good"*)
+- [ ] Olumsuzluk ifadelerini işaretleyen özel bir ön işleme adımı denemek (örn. `not` sonrasındaki kelimelere `NOT_` öneki eklemek)
+- [ ] Kısa cümlelerde başarıyı artırmak için kısa metin ağırlıklı ek örnekler eklemek
+
+### Aşama 4 — Mimari İyileştirmeler (Negation Scope)
+- [ ] BiLSTM üzerine **Attention katmanı** eklemek ve olumsuzluk cümlelerindeki dikkat ağırlıklarını görselleştirmek
+- [ ] Önceden eğitilmiş kelime gömmeleri (**GloVe / fastText**) ile embedding katmanını başlatmak
+- [ ] **BERT / DistilBERT** tabanlı bir modeli fine-tune edip BiLSTM ile karşılaştırmalı rapor hazırlamak
+- [ ] Türkçe girişleri de destekleyecek çok dilli bir model (örn. çok dilli BERT ya da Türkçe BERT) değerlendirmek
+
+### Aşama 5 — Yayınlama ve Mühendislik
 - [ ] Modelin Hugging Face üzerinde yayınlanması (`nlp_huggingface_api.py` bu yönde bir başlangıç noktasıdır)
+- [ ] `requirements.txt` eklemek ve kurulum adımlarını sürümlü bağımlılıklarla güncellemek
+- [ ] Birçok `nlp_*` denemesini tek bir `src/` yapısında toplayıp (veri, model, eğitim, API) projeyi sadeleştirmek
+- [ ] API için birim testleri (örn. `pytest`) ve olumsuzluk test setini otomatik çalıştıran bir CI adımı eklemek
+- [ ] Arayüzde tahminin güven oranını ve olası düşük güvenli durumlarda kullanıcıya uyarı göstermek
+- [ ] Docker ile paketleme
 
 ## 🤝 Katkıda Bulunma
 
