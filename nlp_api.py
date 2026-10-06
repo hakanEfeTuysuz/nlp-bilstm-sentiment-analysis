@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware # YENİ EKLENDİ
 import torch
 import torch.nn as nn
 import json
-import re
+from src.temizleme import temizle
 
 print("--- Sistem Başlatılıyor: NLP API Motoru Isınıyor ---")
 
@@ -59,29 +59,28 @@ class YorumIstegi(BaseModel):
 @app.post("/analiz-et")
 def duyguyu_analiz_et(istek: YorumIstegi):
     # a. Metni Temizle
-    temiz_metin = re.sub(r'[^a-z\s]', '', re.sub(r'<[^>]+>', ' ', istek.metin.lower()))
-    temiz_metin = re.sub(r'\s+', ' ', temiz_metin).strip()
-    
+    temiz_metin = temizle(istek.metin, surum="v1")
+
     # b. Sayılara Çevir ve 256 Uzunluğa Sabitle
     sayisal_dizi = [sozluk.get(kelime, sozluk["<UNK>"]) for kelime in temiz_metin.split()]
     SABIT_UZUNLUK = 256
-    
+
     if len(sayisal_dizi) < SABIT_UZUNLUK:
         sayisal_dizi.extend([sozluk["<PAD>"]] * (SABIT_UZUNLUK - len(sayisal_dizi)))
     else:
         sayisal_dizi = sayisal_dizi[:SABIT_UZUNLUK]
-        
+
     # c. Ekran Kartına (veya İşlemciye) Yolla
     x_tensor = torch.tensor([sayisal_dizi], dtype=torch.long).to(device)
-    
+
     # d. Yapay Zekadan Kararı Al
     with torch.no_grad():
         cikis = model(x_tensor)
         tahmin = torch.argmax(cikis, dim=1).item()
         olasilik = torch.softmax(cikis, dim=1)[0][tahmin].item() * 100
-        
+
     durum = "Olumlu" if tahmin == 1 else "Olumsuz"
-    
+
     # e. Müşteriye JSON formatında şık bir cevap dön
     return {
         "orijinal_metin": istek.metin,

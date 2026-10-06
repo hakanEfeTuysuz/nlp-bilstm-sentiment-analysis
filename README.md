@@ -53,11 +53,11 @@ nlp-bilstm-sentiment-analysis/
 ├── nlp_gercek_veri_hatti.py  # Veri boru hattı - iyileştirilmiş sürüm
 ├── nlp_tam_boru_hatti.py     # Tam veri boru hattı (Dataset/DataLoader, padding/truncation)
 │
-├── nlp_lstm_mimarisi.py      # BiLSTM model mimarisinin tanımı
+├── nlp_lstm_mimarisi.py      # BiLSTM mimarisi + IMDb eğitimi (imdb_lstm_modeli.pth ve imdb_sozluk.json dosyalarını üretir)
 ├── nlp_model_mimarisi.py     # Model mimarisi - alternatif/iyileştirilmiş sürüm
 ├── nlp_endustriyel_model.py  # Model mimarisi - üretim seviyesi son sürüm
 │
-├── nlp_egitim_dongusu.py     # Eğitim döngüsü (training loop)
+├── nlp_egitim_dongusu.py     # İlk aşama oyuncak eğitim denemesi (10 cümlelik veri)
 ├── nlp_gercek_sinav.py       # Görülmemiş 25.000 satırlık test seti değerlendirmesi
 ├── nlp_buyuk_final.py        # Tüm bileşenleri bir araya getiren final betiği
 ├── nlp_huggingface_api.py    # Hugging Face entegrasyonu için alternatif servis betiği
@@ -77,7 +77,7 @@ Bu proje, hazır bir kütüphane fonksiyonunun tek satırda çağrıldığı bir
 | 2 | Veri boru hattı ve temizlik — ham IMDb yorumlarının Regex ile büyük/küçük harf, noktalama ve HTML etiketlerinden arındırılması | `nlp_metin_temizleme.py` |
 | 3 | Özel sözlük inşası — frekans analiziyle donanım dostu 10.000 kelimelik bir embedding sözlüğü oluşturulması | `imdb_sozluk.json` |
 | 4 | Matris paketlemesi — `Dataset`/`DataLoader` ile farklı uzunluktaki metinlerin 256'lık sabit tensörlere (padding/truncation) dönüştürülmesi | `nlp_tam_boru_hatti.py` |
-| 5 | Model inşası ve eğitim — BiLSTM mimarisinin kurulması ve 25.000 yorum üzerinde eğitilerek ağırlıkların (`.pth`) kaydedilmesi | `nlp_egitim_dongusu.py` |
+| 5 | Model inşası ve eğitim — BiLSTM mimarisinin kurulması ve 25.000 yorum üzerinde eğitilerek ağırlıkların (`.pth`) kaydedilmesi | `nlp_lstm_mimarisi.py` |
 | 6 | Büyük yüzleşme — modelin hiç görmediği 25.000 satırlık test setiyle sınanması, overfitting kontrolü | `nlp_gercek_sinav.py` |
 | 7 | Ürünleştirme — terminaldeki modelin FastAPI ile web servisine dönüştürülmesi ve asenkron bir arayüzle dış dünyaya açılması | `nlp_api.py`, `index.html` |
 
