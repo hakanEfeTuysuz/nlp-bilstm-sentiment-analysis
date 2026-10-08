@@ -1,0 +1,28 @@
+"""BiLSTM duygu analizi modeli.
+
+Mimari, mevcut imdb_lstm_modeli.pth ile birebir uyumludur (aynı katman
+adları ve boyutlar). `uzunluklar` parametresi şimdilik kullanılmıyor; sonraki
+commit'te padding düzeltmesi için kullanılacak.
+"""
+import torch
+import torch.nn as nn
+
+
+class LSTMDuyguModeli(nn.Module):
+    def __init__(self, sozluk_boyutu, vektor_boyutu=64, gizli_katman=64):
+        super().__init__()
+        self.embedding = nn.Embedding(
+            num_embeddings=sozluk_boyutu, embedding_dim=vektor_boyutu, padding_idx=0
+        )
+        self.lstm = nn.LSTM(
+            input_size=vektor_boyutu, hidden_size=gizli_katman,
+            batch_first=True, bidirectional=True,
+        )
+        self.dropout = nn.Dropout(0.5)
+        self.fc = nn.Linear(gizli_katman * 2, 2)
+
+    def forward(self, x, uzunluklar=None):
+        gomumler = self.embedding(x)
+        _, (hidden, _) = self.lstm(gomumler)
+        son_hafiza = torch.cat((hidden[-2], hidden[-1]), dim=1)
+        return self.fc(self.dropout(son_hafiza))
