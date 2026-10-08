@@ -1,0 +1,235 @@
+{
+  "ad": "bilstm_v1_s2",
+  "temizleme": "v1",
+  "en_iyi_epoch": 10,
+  "dogrulama_dogrulugu": 84.84,
+  "test_dogrulugu": 83.14,
+  "negation": {
+    "genel_dogruluk": 53.33,
+    "olumlu_tahmin_orani": 73.33,
+    "kategoriler": {
+      "dogrudan_olumsuzluk": {
+        "dogru": 1,
+        "toplam": 12
+      },
+      "olumsuzun_olumsuzu": {
+        "dogru": 7,
+        "toplam": 12
+      },
+      "kisaltma": {
+        "dogru": 5,
+        "toplam": 12
+      },
+      "kontrol": {
+        "dogru": 9,
+        "toplam": 10
+      },
+      "zitlik": {
+        "dogru": 5,
+        "toplam": 6
+      },
+      "diger_olumsuzluk": {
+        "dogru": 5,
+        "toplam": 8
+      }
+    },
+    "hatalar": [
+      {
+        "metin": "This movie is not good.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 82.96,
+        "kategori": "dogrudan_olumsuzluk"
+      },
+      {
+        "metin": "The acting was not great.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 80.84,
+        "kategori": "dogrudan_olumsuzluk"
+      },
+      {
+        "metin": "The film is not funny at all.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 68.71,
+        "kategori": "dogrudan_olumsuzluk"
+      },
+      {
+        "metin": "I did not like this movie.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 79.75,
+        "kategori": "dogrudan_olumsuzluk"
+      },
+      {
+        "metin": "The story is not interesting.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 81.53,
+        "kategori": "dogrudan_olumsuzluk"
+      },
+      {
+        "metin": "This is not a good film.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 91.97,
+        "kategori": "dogrudan_olumsuzluk"
+      },
+      {
+        "metin": "The ending was not satisfying.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 79.68,
+        "kategori": "dogrudan_olumsuzluk"
+      },
+      {
+        "metin": "I would not recommend this movie.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 68.97,
+        "kategori": "dogrudan_olumsuzluk"
+      },
+      {
+        "metin": "The plot is not believable.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 60.63,
+        "kategori": "dogrudan_olumsuzluk"
+      },
+      {
+        "metin": "The characters are not likable.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 92.3,
+        "kategori": "dogrudan_olumsuzluk"
+      },
+      {
+        "metin": "This movie is not entertaining.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 89.94,
+        "kategori": "dogrudan_olumsuzluk"
+      },
+      {
+        "metin": "The film is not boring at all.",
+        "beklenen": "Olumlu",
+        "tahmin": "Olumsuz",
+        "eminlik": 77.3,
+        "kategori": "olumsuzun_olumsuzu"
+      },
+      {
+        "metin": "The movie was never boring.",
+        "beklenen": "Olumlu",
+        "tahmin": "Olumsuz",
+        "eminlik": 57.89,
+        "kategori": "olumsuzun_olumsuzu"
+      },
+      {
+        "metin": "There is nothing boring about this film.",
+        "beklenen": "Olumlu",
+        "tahmin": "Olumsuz",
+        "eminlik": 89.32,
+        "kategori": "olumsuzun_olumsuzu"
+      },
+      {
+        "metin": "The story is not dull for a single minute.",
+        "beklenen": "Olumlu",
+        "tahmin": "Olumsuz",
+        "eminlik": 74.18,
+        "kategori": "olumsuzun_olumsuzu"
+      },
+      {
+        "metin": "No one could call this movie boring.",
+        "beklenen": "Olumlu",
+        "tahmin": "Olumsuz",
+        "eminlik": 96.08,
+        "kategori": "olumsuzun_olumsuzu"
+      },
+      {
+        "metin": "This movie isn't good.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 84.62,
+        "kategori": "kisaltma"
+      },
+      {
+        "metin": "The acting wasn't convincing.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 75.43,
+        "kategori": "kisaltma"
+      },
+      {
+        "metin": "I didn't enjoy a single minute.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 91.04,
+        "kategori": "kisaltma"
+      },
+      {
+        "metin": "It doesn't deserve the hype.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 57.59,
+        "kategori": "kisaltma"
+      },
+      {
+        "metin": "The jokes weren't funny.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 88.97,
+        "kategori": "kisaltma"
+      },
+      {
+        "metin": "This film isn't bad.",
+        "beklenen": "Olumlu",
+        "tahmin": "Olumsuz",
+        "eminlik": 58.75,
+        "kategori": "kisaltma"
+      },
+      {
+        "metin": "I don't regret watching it.",
+        "beklenen": "Olumlu",
+        "tahmin": "Olumsuz",
+        "eminlik": 62.21,
+        "kategori": "kisaltma"
+      },
+      {
+        "metin": "I hated every minute of it.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 53.72,
+        "kategori": "kontrol"
+      },
+      {
+        "metin": "Beautiful photography, yet nothing happens.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 92.35,
+        "kategori": "zitlik"
+      },
+      {
+        "metin": "This movie is no good.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 90.51,
+        "kategori": "diger_olumsuzluk"
+      },
+      {
+        "metin": "I will never watch this again.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 95.0,
+        "kategori": "diger_olumsuzluk"
+      },
+      {
+        "metin": "Nothing about this movie works.",
+        "beklenen": "Olumsuz",
+        "tahmin": "Olumlu",
+        "eminlik": 78.79,
+        "kategori": "diger_olumsuzluk"
+      }
+    ]
+  }
+}
