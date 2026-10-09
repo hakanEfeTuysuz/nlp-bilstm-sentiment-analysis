@@ -3,6 +3,7 @@
 Kullanım (proje kök klasöründen):
     python3 -m src.egitim --ad bilstm_v2 --temizleme v2 --epoch 10
     python3 -m src.egitim --ad bilstm_v2_pack --temizleme v2 --paketle
+    python3 -m src.egitim --ad bilstm_sablon --temizleme v2 --paketle --sablon 4000
 
 Çıktılar:
     modeller/<ad>.pth         en iyi doğrulama epoch'unun ağırlıkları
@@ -12,6 +13,7 @@ Kullanım (proje kök klasöründen):
 
 Doğrulama (validation) için eğitim verisinin %10'u ayrılır, epoch seçimi buna
 göre yapılır. IMDb test seti yalnızca en sonda, bir kez kullanılır.
+Şablon cümleleri (--sablon) yalnızca eğitim kısmına eklenir; doğrulama saf IMDb kalır.
 """
 import argparse
 import json
@@ -27,6 +29,7 @@ from torch.utils.data import DataLoader, TensorDataset
 
 from src.degerlendir import dogruluk_hesapla, negation_degerlendir
 from src.model import LSTMDuyguModeli
+from src.sablon_veri import sablon_uret
 from src.veri import kodla_toplu, sozluk_olustur, temizle_toplu
 
 VEKTOR_BOYUTU = 64
@@ -50,6 +53,8 @@ def main():
     ap.add_argument("--temizleme", default="v2", choices=["v1", "v2"])
     ap.add_argument("--paketle", action="store_true",
                     help="LSTM'e gerçek uzunlukları ver (pack_padded_sequence)")
+    ap.add_argument("--sablon", type=int, default=0,
+                    help="Eğitime eklenecek olumsuzluk şablon cümlesi sayısı")
     ap.add_argument("--epoch", type=int, default=10)
     ap.add_argument("--batch", type=int, default=64)
     ap.add_argument("--lr", type=float, default=0.001)
@@ -59,7 +64,7 @@ def main():
     tohum_ayarla(a.tohum)
     cihaz = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"-> Cihaz: {cihaz.type.upper()} | temizleme: {a.temizleme} | "
-          f"paketle: {a.paketle} | epoch: {a.epoch}")
+          f"paketle: {a.paketle} | şablon: {a.sablon} | epoch: {a.epoch}")
 
     print("-> Veri yükleniyor ve temizleniyor...")
     veri = load_dataset("stanfordnlp/imdb")
@@ -79,6 +84,13 @@ def main():
     val_metin = [temiz_egitim[i] for i in val_idx]
     y_tr = torch.tensor([etiket_egitim[i] for i in tr_idx], dtype=torch.long)
     y_val = torch.tensor([etiket_egitim[i] for i in val_idx], dtype=torch.long)
+
+    # Şablon cümleleri yalnızca eğitime eklenir
+    if a.sablon > 0:
+        sab_metin, sab_etiket = sablon_uret(a.sablon, a.tohum)
+        tr_metin = tr_metin + temizle_toplu(sab_metin, a.temizleme)
+        y_tr = torch.cat([y_tr, torch.tensor(sab_etiket, dtype=torch.long)])
+        print(f"-> {a.sablon} şablon cümlesi eğitime eklendi")
 
     # Sözlük yalnızca eğitim kısmından kurulur (doğrulama/test sızıntısı olmasın)
     sozluk = sozluk_olustur(tr_metin)
@@ -135,6 +147,7 @@ def main():
         "ad": a.ad,
         "temizleme": a.temizleme,
         "paketle": a.paketle,
+        "sablon": a.sablon,
         "vektor_boyutu": VEKTOR_BOYUTU,
         "gizli_katman": GIZLI_KATMAN,
         "sabit_uzunluk": 256,
@@ -150,6 +163,7 @@ def main():
         "ad": a.ad,
         "temizleme": a.temizleme,
         "paketle": a.paketle,
+        "sablon": a.sablon,
         "en_iyi_epoch": en_iyi_epoch,
         "dogrulama_dogrulugu": round(en_iyi_val, 2),
         "test_dogrulugu": round(test_dogruluk, 2),
