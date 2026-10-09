@@ -2,6 +2,7 @@
 
 Kullanım (proje kök klasöründen):
     python3 -m src.egitim --ad bilstm_v2 --temizleme v2 --epoch 10
+    python3 -m src.egitim --ad bilstm_v2_pack --temizleme v2 --paketle
 
 Çıktılar:
     modeller/<ad>.pth         en iyi doğrulama epoch'unun ağırlıkları
@@ -47,6 +48,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--ad", required=True, help="Çıktı dosyalarının adı, örn. bilstm_v2")
     ap.add_argument("--temizleme", default="v2", choices=["v1", "v2"])
+    ap.add_argument("--paketle", action="store_true",
+                    help="LSTM'e gerçek uzunlukları ver (pack_padded_sequence)")
     ap.add_argument("--epoch", type=int, default=10)
     ap.add_argument("--batch", type=int, default=64)
     ap.add_argument("--lr", type=float, default=0.001)
@@ -55,7 +58,8 @@ def main():
 
     tohum_ayarla(a.tohum)
     cihaz = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"-> Cihaz: {cihaz.type.upper()} | temizleme: {a.temizleme} | epoch: {a.epoch}")
+    print(f"-> Cihaz: {cihaz.type.upper()} | temizleme: {a.temizleme} | "
+          f"paketle: {a.paketle} | epoch: {a.epoch}")
 
     print("-> Veri yükleniyor ve temizleniyor...")
     veri = load_dataset("stanfordnlp/imdb")
@@ -88,7 +92,7 @@ def main():
     val_yuk = yukleyici_olustur(X_val, L_val, y_val, 256, False)
     te_yuk = yukleyici_olustur(X_te, L_te, etiket_test, 256, False)
 
-    model = LSTMDuyguModeli(len(sozluk), VEKTOR_BOYUTU, GIZLI_KATMAN).to(cihaz)
+    model = LSTMDuyguModeli(len(sozluk), VEKTOR_BOYUTU, GIZLI_KATMAN, paketle=a.paketle).to(cihaz)
     kayip_fn = nn.CrossEntropyLoss()
     opt = optim.Adam(model.parameters(), lr=a.lr)
 
@@ -130,6 +134,7 @@ def main():
     Path(f"modeller/{a.ad}_meta.json").write_text(json.dumps({
         "ad": a.ad,
         "temizleme": a.temizleme,
+        "paketle": a.paketle,
         "vektor_boyutu": VEKTOR_BOYUTU,
         "gizli_katman": GIZLI_KATMAN,
         "sabit_uzunluk": 256,
@@ -144,6 +149,7 @@ def main():
     Path(f"sonuclar/{a.ad}.json").write_text(json.dumps({
         "ad": a.ad,
         "temizleme": a.temizleme,
+        "paketle": a.paketle,
         "en_iyi_epoch": en_iyi_epoch,
         "dogrulama_dogrulugu": round(en_iyi_val, 2),
         "test_dogrulugu": round(test_dogruluk, 2),
