@@ -4,6 +4,7 @@ Kullanım (proje kök klasöründen):
     python3 -m src.egitim --ad bilstm_v2 --temizleme v2 --epoch 10
     python3 -m src.egitim --ad bilstm_v2_pack --temizleme v2 --paketle
     python3 -m src.egitim --ad bilstm_sablon --temizleme v2 --paketle --sablon 4000
+    python3 -m src.egitim --ad bilstm_dikkat --temizleme v2 --paketle --dikkat
 
 Çıktılar:
     modeller/<ad>.pth         en iyi doğrulama epoch'unun ağırlıkları
@@ -53,6 +54,8 @@ def main():
     ap.add_argument("--temizleme", default="v2", choices=["v1", "v2"])
     ap.add_argument("--paketle", action="store_true",
                     help="LSTM'e gerçek uzunlukları ver (pack_padded_sequence)")
+    ap.add_argument("--dikkat", action="store_true",
+                    help="Son gizli durum yerine dikkat (attention) ağırlıklı özet kullan")
     ap.add_argument("--sablon", type=int, default=0,
                     help="Eğitime eklenecek olumsuzluk şablon cümlesi sayısı")
     ap.add_argument("--epoch", type=int, default=10)
@@ -64,7 +67,7 @@ def main():
     tohum_ayarla(a.tohum)
     cihaz = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"-> Cihaz: {cihaz.type.upper()} | temizleme: {a.temizleme} | "
-          f"paketle: {a.paketle} | şablon: {a.sablon} | epoch: {a.epoch}")
+          f"paketle: {a.paketle} | dikkat: {a.dikkat} | şablon: {a.sablon} | epoch: {a.epoch}")
 
     print("-> Veri yükleniyor ve temizleniyor...")
     veri = load_dataset("stanfordnlp/imdb")
@@ -104,7 +107,9 @@ def main():
     val_yuk = yukleyici_olustur(X_val, L_val, y_val, 256, False)
     te_yuk = yukleyici_olustur(X_te, L_te, etiket_test, 256, False)
 
-    model = LSTMDuyguModeli(len(sozluk), VEKTOR_BOYUTU, GIZLI_KATMAN, paketle=a.paketle).to(cihaz)
+    model = LSTMDuyguModeli(
+        len(sozluk), VEKTOR_BOYUTU, GIZLI_KATMAN, paketle=a.paketle, dikkat=a.dikkat
+    ).to(cihaz)
     kayip_fn = nn.CrossEntropyLoss()
     opt = optim.Adam(model.parameters(), lr=a.lr)
 
@@ -147,6 +152,7 @@ def main():
         "ad": a.ad,
         "temizleme": a.temizleme,
         "paketle": a.paketle,
+        "dikkat": a.dikkat,
         "sablon": a.sablon,
         "vektor_boyutu": VEKTOR_BOYUTU,
         "gizli_katman": GIZLI_KATMAN,
@@ -163,6 +169,7 @@ def main():
         "ad": a.ad,
         "temizleme": a.temizleme,
         "paketle": a.paketle,
+        "dikkat": a.dikkat,
         "sablon": a.sablon,
         "en_iyi_epoch": en_iyi_epoch,
         "dogrulama_dogrulugu": round(en_iyi_val, 2),

@@ -1,0 +1,10 @@
+{
+  "ad": "bilstm_v2_pack_sablon_s1",
+  "temizleme": "v2",
+  "paketle": true,
+  "sablon": 4000,
+  "vektor_boyutu": 64,
+  "gizli_katman": 64,
+  "sabit_uzunluk": 256,
+  "en_iyi_epoch": 7
+}
