@@ -28,6 +28,7 @@ def modeli_yukle(meta_yolu, cihaz):
     model = LSTMDuyguModeli(
         len(sozluk), meta["vektor_boyutu"], meta["gizli_katman"],
         paketle=meta.get("paketle", False),
+        dikkat=meta.get("dikkat", False),
     )
     model.load_state_dict(
         torch.load(f"modeller/{ad}.pth", map_location=cihaz, weights_only=True)
